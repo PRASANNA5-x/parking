@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking Slot Management</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: whitesmoke;
+        }
+
+        .slot {
+            display: inline-block;
+            padding: 15px;
+            margin: 5px;
+            width: 60px;
+            border: 1px solid black;
+            background: white;
+        }
+
+        .occupied {
+            background: lightgreen;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Parking Slot Management System</h1>
+
+<h2>Parking Area</h2>
+<div id="parkingArea"></div>
+
+<h3>Available Slots: <span id="available">15</span></h3>
+
+<h2>Park Vehicle</h2>
+<input type="text" id="vehicle" placeholder="Vehicle Number">
+<button onclick="parkVehicle()">Park</button>
+
+<h2>Remove Vehicle</h2>
+<input type="text" id="removeVehicle" placeholder="Vehicle Number">
+<button onclick="removeVehicle()">Remove</button>
+
+<h3 id="message"></h3>
+
+<h2>Parked Vehicles</h2>
+
+<table>
+    <tr>
+        <th>Vehicle Number</th>
+        <th>Parking Slot</th>
+    </tr>
+    <tbody id="vehicleList"></tbody>
+</table>
+
+<script>
+
+let parking = [
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""]
+];
+
+let rows = ["A", "B", "C"];
+
+function parkVehicle() {
+    let number = document.getElementById("vehicle").value.trim().toUpperCase();
+
+    if (number == "") {
+        alert("Enter vehicle number");
+        return;
+    }
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 5; j++) {
+            if (parking[i][j] == number) {
+                document.getElementById("message").innerText =
+                    "VEHICLE ALREADY PARKED";
+                return;
+            }
+        }
+    }
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 5; j++) {
+
+            if (parking[i][j] == "") {
+                parking[i][j] = number;
+
+                document.getElementById("message").innerText =
+                    "PARKED: " + number + " at " + rows[i] + (j + 1);
+
+                document.getElementById("vehicle").value = "";
+
+                showParking();
+                return;
+            }
+        }
+    }
+
+    document.getElementById("message").innerText = "PARKING FULL";
+}
+
+function removeVehicle() {
+    let number = document.getElementById("removeVehicle").value.trim().toUpperCase();
+
+    if (number == "") {
+        alert("Enter vehicle number");
+        return;
+    }
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 5; j++) {
+
+            if (parking[i][j] == number) {
+                parking[i][j] = "";
+
+                document.getElementById("message").innerText =
+                    "REMOVED: " + number + " from " + rows[i] + (j + 1);
+
+                document.getElementById("removeVehicle").value = "";
+
+                showParking();
+                return;
+            }
+        }
+    }
+
+    document.getElementById("message").innerText = "VEHICLE NOT FOUND";
+}
+
+function showParking() {
+    let area = "";
+    let list = "";
+    let free = 0;
+
+    for (let i = 0; i < 3; i++) {
+        area += "<div>";
+
+        for (let j = 0; j < 5; j++) {
+            let slotName = rows[i] + (j + 1);
+
+            if (parking[i][j] == "") {
+                area += `<span class="slot">${slotName}</span>`;
+                free++;
+            } else {
+                area += `<span class="slot occupied">${slotName}</span>`;
+
+                list += `<tr>
+                    <td>${parking[i][j]}</td>
+                    <td>${slotName}</td>
+                </tr>`;
+            }
+        }
+
+        area += "</div>";
+    }
+
+    document.getElementById("parkingArea").innerHTML = area;
+    document.getElementById("available").innerText = free;
+    document.getElementById("vehicleList").innerHTML = list;
+}
+
+showParking();
+
+</script>
+
+</body>
+</html>
